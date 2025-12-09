@@ -1,0 +1,24 @@
+{
+  "name": "luziac-nova-caucaia",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/franklinsouza/luziac-nova-caucaia#readme",
+  "bugs": {
+    "url": "https://github.com/franklinsouza/luziac-nova-caucaia/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/franklinsouza/luziac-nova-caucaia.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sass": "sass --watch assets/sass/style.scss:assets/css/style.min.css --style compressed"
+  },
+  "devDependencies": {
+    "sass": "^1.95.0"
+  }
+}
