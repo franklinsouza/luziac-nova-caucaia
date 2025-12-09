@@ -9334,6 +9334,9 @@ select {
 
   .second-footer {
     .caption {
+      display: flex;
+      gap: 25px;
+
       margin-top: 65px;
 
       @media only screen and (max-width: 599px) {
@@ -9394,6 +9397,10 @@ select {
             @media only screen and (max-width: 991px) {
               font-size: 18px;
             }
+          }
+
+          a {
+            color: variable.$white;
           }
         }
       }
