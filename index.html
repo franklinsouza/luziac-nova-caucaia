@@ -566,16 +566,15 @@
             </div>
             <!-- section-title -->
 
-            <form class="text-left quote-form">
+            <form class="text-left quote-form contact-form" method="post">
               <div class="row">
                 <div class="col-sm-6">
                   <div class="form-group">
                     <input
                       id="name"
-                      name="name"
+                      name="nome"
                       type="text"
                       class="form-control"
-                      required=""
                       placeholder="Nome"
                     />
                   </div>
@@ -588,7 +587,6 @@
                       id="email"
                       name="email"
                       type="email"
-                      required=""
                       placeholder="Email"
                     />
                   </div>
@@ -601,11 +599,14 @@
                       id="whats"
                       name="whatsapp"
                       type="text"
-                      required=""
                       placeholder="Whatsapp"
                     />
                   </div>
                 </div>
+              </div>
+
+              <div class="row">
+                <div class="form-msg"></div>
               </div>
 
               <div class="form-group text-center">
@@ -747,6 +748,7 @@
     <script src="assets/js/wow.js"></script>
     <script src="assets/js/lightbox.js"></script>
     <script src="assets/owl-carrosel/owl.carousel.min.js"></script>
+    <script src="assets/js/jquery.validate.min.js"></script>
     <script src="assets/js/script.js"></script>
   </body>
 </html>

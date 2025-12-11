@@ -1,68 +1,97 @@
 <?php
-   
-    session_cache_limiter( 'nocache' );
-    header( 'Expires: ' . gmdate( 'r', 0 ) );
-    header( 'Content-type: application/json' );
+  header('Content-Type: application/json');
+
+  use PHPMailer\PHPMailer\PHPMailer;
+  use PHPMailer\PHPMailer\Exception;
+
+  require '../api/mail/PHPMailer/src/PHPMailer.php';
+  require '../api/mail/PHPMailer/src/SMTP.php';
+  require '../api/mail/PHPMailer/src/Exception.php';
 
 
-    $to         = 'demo@gmail.com'; //put your email here
+  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $nome = strip_tags($_POST['nome']);
+    $email = filter_var($_POST['email'], FILTER_VALIDATE_EMAIL);
+    $whatsapp = strip_tags($_POST['whatsapp']);
 
-    $email_template = 'simple.html';
+    $requiredfields = [
+        'nome' => $nome,
+        'email' => $email,
+        'whatsapp' => $whatsapp
+    ];
 
-    $subject    = strip_tags($_POST['subject']);
-    $email       = strip_tags($_POST['email']);
-    $phone      = strip_tags($_POST['phone']);
-    $name       = strip_tags($_POST['name']);
-    $message    = nl2br( htmlspecialchars($_POST['message'], ENT_QUOTES) );
-    $result     = array();
+    $erros = [];
 
-
-    if(empty($name)){
-
-        $result = array( 'response' => 'error', 'empty'=>'name', 'message'=>'<strong>Error!</strong> Name is empty.' );
-        echo json_encode($result );
-        die;
-    } 
-
-    if(empty($email)){
-
-        $result = array( 'response' => 'error', 'empty'=>'email', 'message'=>'<strong>Error!</strong> Email is empty.' );
-        echo json_encode($result );
-        die;
-    } 
-
-    if(empty($message)){
-
-         $result = array( 'response' => 'error', 'empty'=>'message', 'message'=>'<strong>Error!</strong> Message body is empty.' );
-         echo json_encode($result );
-         die;
+    if ($requiredfields['nome'] === '') {
+        $erros[] = 'Nome é obrigatório';
     }
 
-    $headers  = "From: " . $name . ' <' . $email . '>' . "\r\n";
-    $headers .= "Reply-To: ". $email . "\r\n";
-    $headers .= "MIME-Version: 1.0\r\n";
-    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
-
-
-    $templateTags =  array(
-        '{{subject}}' => $subject,
-        '{{email}}'=>$email,
-        '{{message}}'=>$message,
-        '{{name}}'=>$name,
-        '{{phone}}'=>$phone
-        );
-
-
-    $templateContents = file_get_contents( dirname(__FILE__) . '/email-templates/'.$email_template);
-
-    $contents =  strtr($templateContents, $templateTags);
-
-    if ( mail( $to, $subject, $contents, $headers ) ) {
-        $result = array( 'response' => 'success', 'message'=>'<strong>Success!</strong> Mail Sent.' );
-    } else {
-        $result = array( 'response' => 'error', 'message'=>'<strong>Error!</strong> Cann\'t Send Mail.'  );
+    if ($requiredfields['email'] === false) {
+        $erros[] = 'Email inválido'; 
     }
 
-    echo json_encode( $result );
+    if ($requiredfields['whatsapp'] === '') {
+      $erros[] = 'Telefone inválido';
+    }
 
-    die;
+    // if (!empty($erros)) {
+    //   http_response_code(400);
+      
+    //   echo json_encode([
+    //     'status' => false,
+    //     'msg' => 'Erro de validação',
+    //     'erros' => $erros
+    //   ]);
+    //   exit;
+    // }
+    
+
+    $html = file_get_contents(__DIR__ . '/template-contact.html');
+
+    $html = str_replace(
+        ['{{nome}}','{{email}}','{{whatsapp}}','{{ano}}'],
+        [$nome, $email, $whatsapp, date('Y')],
+        $html
+    );
+
+    // $alt = "Novo contato recebido\n\n"
+    //    . "Nome: $nome\n"
+    //    . "E-mail: $email\n"
+    //    . "Telefone: $whatsapp\n"
+
+    try{
+      //Server settings
+      $mail = new PHPMailer(true);
+      $mail->isSMTP();
+      $mail->Host       = 'email-ssl.com.br';
+      $mail->SMTPAuth   = true;
+      $mail->Username   = 'no-reply@sancan.com.br';
+      $mail->Password   = 'qtBkqjhx39xQ4r3!';
+      $mail->SMTPSecure = 'ssl';
+      $mail->Port       = 465;
+
+      //Recipients
+      $mail->setFrom('no-reply@sancan.com.br', 'SANCAN');
+      $mail->addAddress('novacaucaia9@gmail.com'); //
+      $mail->Subject = 'NOVA CAUCAIA';
+
+      $mail->CharSet = 'UTF-8';
+      $mail->Encoding = 'base64';
+
+      //Content
+      $mail->isHTML(true);
+      $mail->Body = $html;
+      // $mail->AltBody = $alt;
+
+      $mail->send();
+
+      http_response_code(200);
+      echo json_encode(['status' => true]);
+
+    }catch(Exception $e){
+        //file_put_contents(__DIR__ . '/mail_error.log', $mail->ErrorInfo . PHP_EOL, FILE_APPEND);
+
+        http_response_code(400);
+        echo json_encode(['status' => false]);
+    }
+  }

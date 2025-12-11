@@ -90,6 +90,63 @@ jQuery(function ($) {
   }
 
   // -------------------------------------------------------------
+  //      Form
+  // -------------------------------------------------------------
+  $(".contact-form").validate({
+    rules: {
+      nome: {
+        required: true,
+        minlength: 2,
+      },
+      email: {
+        required: true,
+        email: true,
+      },
+      whatsapp: {
+        required: true,
+      },
+    },
+    messages: {
+      nome: "Insira seu nome.",
+      email: "Insira seu e-mail",
+      whatsapp: "Insira seu Whatsapp",
+    },
+    submitHandler: async function (form, event) {
+      event.preventDefault();
+      const submitButton = $(form).find('button[type="submit"]');
+      const formData = new FormData(form);
+      const msg = $(form).find(".form-msg");
+
+      submitButton.prop("disabled", true).text("Enviando...");
+      msg.removeClass("success error").text("");
+
+      try {
+        const dataResponse = await fetch("./sendemail.php", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!dataResponse.ok) {
+          throw new Error("Erro ao enviar o formulário.");
+        }
+
+        const response = await dataResponse.json();
+
+        if (response.status) {
+          form.reset();
+          msg.addClass("success").text("Formulário enviado com sucesso.");
+        } else {
+          msg.addClass("error").text("Erro ao enviar o formulário.");
+        }
+      } catch (err) {
+        msg.addClass("error").text("Erro ao enviar o formulário.");
+      }
+
+      submitButton.prop("disabled", false).text("Quero meu lote agora");
+    },
+  });
+
+  // -------------------------------------------------------------
   //      Cart-Box-Open/Remove
   // -------------------------------------------------------------
 

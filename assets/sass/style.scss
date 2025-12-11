@@ -4325,13 +4325,18 @@ select {
 
   .quote-form {
     .form-group {
+      margin-bottom: 30px;
+
+      .error {
+        color: #ff9191;
+      }
+
       .form-control {
         background-color: transparent;
         border: 2px solid variable.$white;
         border-radius: 25px;
         color: variable.$white;
         padding: 19px 15px;
-        margin-bottom: 30px;
 
         @media only screen and (max-width: 767px) {
           margin-bottom: 10px;
@@ -4359,6 +4364,28 @@ select {
       .btn:hover {
         color: #f28323;
       }
+    }
+
+    .form-msg {
+      text-align: center;
+      color: #fff;
+      border-radius: 9px;
+
+      width: calc(100% - 30px);
+    }
+
+    .form-msg.error,
+    .form-msg.success {
+      margin: 0 auto 20px;
+      padding: 7px;
+    }
+
+    .form-msg.error {
+      background: #ff5b5b;
+    }
+
+    .form-msg.success {
+      background: #5fa34a;
     }
 
     .selection {
